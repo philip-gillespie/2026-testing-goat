@@ -12,7 +12,7 @@ class HomePageTest(TestCase):
         html: str = response.content.decode("utf8")
         self.assertIn("<title>To-Do Lists</title>", html)
         self.assertTrue(html.startswith("<html>"))
-        self.assertTrue(html.endswith("</html>"))
+        self.assertTrue(html.endswith("</html>\n"))
 
     def test_home_page_returns_correct_html2(self):
         response = self.client.get("/")
