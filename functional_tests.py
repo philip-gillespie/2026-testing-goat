@@ -19,6 +19,15 @@ class NewVisitorTest(unittest.TestCase):
     def tearDown(self):
         self.browser.quit()
 
+    def check_for_row_in_list_table(self, row_text):
+        table = self.browser.find_element(By.ID, "id_list_table")
+        rows = table.find_elements(By.TAG_NAME, "tr")
+        self.assertIn(
+            row_text,
+            [row.text for row in rows],
+            f"New to-do item did not appear in table. Contents were: \n{table.text} \n Required: \n{row_text}",
+        )
+
     def test_can_start_a_todo_list(self):
         # Edith has heard about a cool new online to-do app
         # She goes to check out its homepage
@@ -42,14 +51,7 @@ class NewVisitorTest(unittest.TestCase):
         # "1. Buy peacock feathers" as an item in a to-do list
         input_box.send_keys(Keys.ENTER)
         time.sleep(1)
-
-        table = self.browser.find_element(By.ID, "id_list_table")
-        rows = table.find_elements(By.TAG_NAME, "tr")
-        first_item = "1: Buy peacock feathers"
-        self.assertTrue(
-            any(row.text == first_item for row in rows),
-            f"New to-do item did not appear in table. Contents were: \n{table.text} \n Required: \n{first_item}",
-        )
+        self.check_for_row_in_list_table("1: Buy peacock feathers")
 
         # There is a text box inviting her to add another item
         # She enters "Use peacock feathers to make fly" (Edith is very methodical)
@@ -58,19 +60,9 @@ class NewVisitorTest(unittest.TestCase):
         input_box.send_keys(Keys.ENTER)
         time.sleep(1)
 
-        # The page updates again, and now shows both items on her list
-        table = self.browser.find_element(By.ID, "id_list_table")
-        rows = table.find_elements(By.TAG_NAME, "tr")
-        first_item = "1: Buy peacock feathers"
-        self.assertTrue(
-            any(row.text == first_item for row in rows),
-            f"New to-do item did not appear in table. Contents were: \n{table.text} \n Required: \n{first_item}",
-        )
-        second_item = "2: Use peacock feathers to make fly"
-        self.assertTrue(
-            any(row.text == second_item for row in rows),
-            f"New to-do item did not appear in table. Contents were: \n{table.text} \n Required: \n{first_item}",
-        )
+        # The page updates again, and now shows both items in her list
+        self.check_for_row_in_list_table("1: Buy peacock feathers")
+        self.check_for_row_in_list_table("2: Use peacock feathers to make fly")
 
         self.fail("Finish the test")
         # Satisfied, she goes back to sleep
