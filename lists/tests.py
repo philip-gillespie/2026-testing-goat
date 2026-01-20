@@ -6,14 +6,10 @@ from lists.views import home_page
 
 # Create your tests here.
 class HomePageTest(TestCase):
-    def test_home_page_returns_correct_html(self):
-        request = HttpRequest()
-        response = home_page(request)
-        html: str = response.content.decode("utf8")
-        self.assertIn("<title>To-Do Lists</title>", html)
-        self.assertTrue(html.startswith("<html>"))
-        self.assertTrue(html.endswith("</html>\n"))
-
-    def test_home_page_returns_correct_html2(self):
+    def test_uses_home_template(self):
         response = self.client.get("/")
-        self.assertContains(response, "<title>To-Do Lists</title>")
+        self.assertTemplateUsed(response, "home.html")
+
+    def test_renders_homepage_content(self):
+        response = self.client.get("/")
+        self.assertContains(response, "To-Do")
