@@ -2,13 +2,19 @@ import time
 import unittest
 
 from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+
+CHROMEDRIVER = "/usr/bin/chromedriver"
 
 
 class NewVisitorTest(unittest.TestCase):
     def setUp(self):
-        self.browser = webdriver.Chrome()
+        print("Setting up webdriver...")
+        service = Service(CHROMEDRIVER)
+        self.browser = webdriver.Chrome(service=service)
+        print("Setup complete")
 
     def tearDown(self):
         self.browser.quit()
@@ -39,17 +45,34 @@ class NewVisitorTest(unittest.TestCase):
 
         table = self.browser.find_element(By.ID, "id_list_table")
         rows = table.find_elements(By.TAG_NAME, "tr")
+        first_item = "1: Buy peacock feathers"
         self.assertTrue(
-            any(row.text == "1. Buy peacock feathers" for row in rows),
-            "New to-do item did not appear in table.",
+            any(row.text == first_item for row in rows),
+            f"New to-do item did not appear in table. Contents were: \n{table.text} \n Required: \n{first_item}",
         )
 
         # There is a text box inviting her to add another item
         # She enters "Use peacock feathers to make fly" (Edith is very methodical)
-        self.fail("Finish the test")
+        input_box = self.browser.find_element(By.ID, "id_new_item")
+        input_box.send_keys("Use peacock feathers to make fly")
+        input_box.send_keys(Keys.ENTER)
+        time.sleep(1)
 
         # The page updates again, and now shows both items on her list
+        table = self.browser.find_element(By.ID, "id_list_table")
+        rows = table.find_elements(By.TAG_NAME, "tr")
+        first_item = "1: Buy peacock feathers"
+        self.assertTrue(
+            any(row.text == first_item for row in rows),
+            f"New to-do item did not appear in table. Contents were: \n{table.text} \n Required: \n{first_item}",
+        )
+        second_item = "2: Use peacock feathers to make fly"
+        self.assertTrue(
+            any(row.text == second_item for row in rows),
+            f"New to-do item did not appear in table. Contents were: \n{table.text} \n Required: \n{first_item}",
+        )
 
+        self.fail("Finish the test")
         # Satisfied, she goes back to sleep
 
 
