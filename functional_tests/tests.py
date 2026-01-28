@@ -68,8 +68,8 @@ class NewVisitorTest(LiveServerTestCase):
         time.sleep(1)
 
         # The page updates again, and now shows both items in her list
-        self.wait_for_row_in_list_table("1: Buy peacock feathers")
         self.wait_for_row_in_list_table("2: Use peacock feathers to make fly")
+        self.wait_for_row_in_list_table("1: Buy peacock feathers")
 
         # Satisfied, she goes back to sleep
         return None
@@ -100,7 +100,7 @@ class NewVisitorTest(LiveServerTestCase):
         input_box = self.browser.find_element(By.ID, "id_new_item")
         input_box.send_keys("Buy milk")
         input_box.send_keys(Keys.ENTER)
-        self.wait_for_row_in_list_table("1: " + "Buy milk")
+        self.wait_for_row_in_list_table("1: Buy milk")
 
         # Francis gets his own unique URL
         francis_list_url = self.browser.current_url
